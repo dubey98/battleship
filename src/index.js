@@ -3,20 +3,57 @@ import { GameBoard } from "./gameBoard";
 import { Player } from "./Player";
 import { render } from "./render";
 
-function Game() {
-	const player1 = Player("human");
-	const player2 = Player("computer");
+export const gameState = {
+	turn: 2,
+};
 
+startGame();
+
+function startGame() {
 	const gameBoardOne = GameBoard();
 	const gameBoardTwo = GameBoard();
 
 	setShips(gameBoardOne);
 	setShips(gameBoardTwo);
 
-	render.renderGameBoard(gameBoardOne.board, 1);
-	render.renderGameBoard(gameBoardTwo.board, 2);
+	gameState.player1 = {
+		name: "human",
+		gameBoard: gameBoardOne,
+	};
+	gameState.player2 = {
+		name: "computer",
+		gameBoard: gameBoardTwo,
+	};
+
+	render.updateGameBoard(gameBoardOne.board, 1);
+	render.updateGameBoard(gameBoardTwo.board, 2);
 }
-Game();
+
+export function playGame({ row, col, player } = {}) {
+	if (gameState.turn == 2 && player == 1) {
+		if (gameState.player1.gameBoard.isValidAttack(row, col)) {
+			gameState.player1.gameBoard.receiveAttack(row, col);
+			render.updateGameBoard(gameState.player1.gameBoard.board, 1);
+
+			if (gameState.player1.gameBoard.allShipSunk()) {
+				render.declareWinner(gameState.player2);
+			}
+
+			gameState.turn = 1;
+		} else return;
+	} else if (gameState.turn == 1 && player == 2) {
+		gameState.player1.gameBoard.receiveAttack(computer.attack());
+		render.updateGameBoard(gameState.player1.gameBoard.board, 2);
+
+		if (gameState.player1.gameBoard.allShipSunk()) {
+			render.declareWinner(gameState.player2);
+		}
+
+		gameState.turn = 1;
+	} else {
+		console.error("wrong spot mr.");
+	}
+}
 
 function setShips(gameBoard) {
 	gameBoard.placeShip(0, 0, shipYard(5));

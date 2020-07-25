@@ -37,11 +37,16 @@ export const GameBoard = () => {
 	};
 
 	const receiveAttack = (x, y) => {
-		const ship = shipData[board[x][y] - 1].ship;
-		const startY = shipData[board[x][y] - 1].y;
-		ship.isHit(y - startY);
-		board[x][y] = -board[x][y];
-		return board;
+		if (board[x][y] == 100) {
+			board[x][y] = -100;
+			return board;
+		} else {
+			const ship = shipData[board[x][y] - 1].ship;
+			const startY = shipData[board[x][y] - 1].y;
+			ship.isHit(y - startY);
+			board[x][y] = -board[x][y];
+			return board;
+		}
 	};
 
 	const allShipSunk = () => {

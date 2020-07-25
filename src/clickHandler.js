@@ -1,8 +1,8 @@
-import { GameBoard } from "./gameBoard";
+import { playGame } from "./index";
 
 export const clickHandler = (() => {
 	const handleClick = ({ row, col, player, value } = {}) => {
-		console.log("clickHandler invoked ");
+		playGame({ row, col, player });
 	};
 	return {
 		handleClick,
