@@ -1,63 +1,66 @@
-// import shipYard from "./Ship";
+/**GameBoard values meaning
+ *                  not yet Attacked    Attacked
+ *  empty cell           100              -100
+ *  contains ship         n                -n
+ *  where n = ship number
+ */
+export const GameBoard = () => {
+	const board = [];
+	const shipData = [];
+	const size = 10;
+	for (let i = 0; i < size; i++) {
+		let temp = [];
+		for (let j = 0; j < size; j++) {
+			temp.push(100);
+		}
+		board.push(temp);
+	}
 
-// /**GameBoard values meaning
-//  *                  not yet Attacked    Attacked
-//  *  empty cell           100              -100
-//  *  contains ship        n                 -n
-//  *  where n = ship number
-//  */
-// export const gameBoard = () => {
-//   let board = [];
-//   let shipData = [];
+	const placeShip = (x, y, ship) => {
+		/**Length of the ship greater than the board */
+		if (ship.length + y > size) {
+			console.error(
+				"The length of the ship is greter than to accomadate there"
+			);
+			return;
+		}
+		const shipIndex = shipData.length + 1;
+		for (let i = 0; i < ship.length && i + y < size; i++) {
+			board[x][i + y] = shipIndex;
+		}
+		shipData.push({
+			x: x,
+			y: y,
+			ship: ship,
+		});
+		return shipData;
+	};
 
-//   const createGameBoard = (size) => {
-//     const board = [];
-//     for (let i = 0; i < size; i++) {
-//       const tempArray = [];
-//       for (let j = 0; j < size; j++) {
-//         tempArray.push(100);
-//       }
-//       board.push(tempArray);
-//     }
-//     return (this.board = board);
-//   };
+	const receiveAttack = (x, y) => {
+		const ship = shipData[board[x][y] - 1].ship;
+		const startY = shipData[board[x][y] - 1].y;
+		ship.isHit(y - startY);
+		board[x][y] = -board[x][y];
+		return board;
+	};
 
-//   const placeShip = (x, y, length) => {
-//     const ship = shipYard(length);
-//     const shipID = shipData.length + 1;
-//     for (let i = x; i < ship.length; i++) {
-//       this.board[i][y] = shipID;
-//     }
-//     ship.startX = x;
-//     shipData.push(ship);
-//   };
+	const allShipSunk = () => {
+		for (let i = 0; i < shipData.length; i++) {
+			if (!shipData[i].ship.isSunk()) return false;
+		}
+		return true;
+	};
 
-//   /**Given a hit coordinat efind if it hits the ship */
-//   const receiveAttack = (x, y) => {
-//     if (board[x][y] == 100) {
-//       board[x][y] = -100;
-//     } else {
-//       const shipID = board[x][y] + 1;
-//       const ship = shipData[shipID];
-//       ship.isHit(x - ship.startX);
-//     }
-//   };
+	const isValidAttack = (x, y) => {
+		return board[x][y] > 0 ? true : false;
+	};
 
-//   const isAllSunk = () => {
-//     for (let i = 0; i < shipData.length; i++) {
-//       if (shipData[i].isSunk() == false) {
-//         return false;
-//       }
-//     }
-//     return true;
-//   };
-
-//   return {
-//     board,
-//     shipData,
-//     createGameBoard,
-//     placeShip,
-//     receiveAttack,
-//     isAllSunk,
-//   };
-// };
+	return {
+		board,
+		shipData,
+		placeShip,
+		receiveAttack,
+		allShipSunk,
+		isValidAttack,
+	};
+};
