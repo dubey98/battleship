@@ -2,7 +2,7 @@
  *                  not yet Attacked    Attacked
  *  empty cell           100              -100
  *  contains ship         n                -n
- *  where n = ship number
+ *  where n = index of the ship as stored in shipData array
  */
 export const GameBoard = () => {
 	const board = [];

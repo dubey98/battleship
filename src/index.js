@@ -2,14 +2,14 @@ import { GameBoard } from "./gameBoard";
 import { render } from "./render";
 import { shipYard } from "./Ship";
 
-let turn = 1;
-
-const player = {
+export const player = {
 	name: "You",
+	turn: true,
 	battleField: GameBoard(),
 };
-const computer = {
+export const computer = {
 	name: "Computer",
+	turn: false,
 	battleField: GameBoard(),
 };
 
@@ -33,47 +33,4 @@ function placeShips(battleField) {
 	battleField.placeShip(8, 5, shipYard(1));
 	battleField.placeShip(8, 7, shipYard(1));
 	battleField.placeShip(8, 9, shipYard(1));
-}
-
-function attackPlayer() {
-	let row = Math.floor(Math.random() * 9);
-	let col = Math.floor(Math.random() * 9);
-	console.log({ row, col });
-	if (player.battleField.isValidAttack(row, col)) {
-		const result = player.battleField.receiveAttack(row, col);
-		render.updatePlayerField(player.battleField.board);
-		if (player.battleField.allShipSunk()) {
-			render.declareWinner(computer);
-		}
-		if (result) {
-			render.showComputersTurn();
-			attackPlayer();
-		} else {
-			render.showPlayersTurn();
-			return;
-		}
-	} else {
-		attackPlayer();
-	}
-}
-
-export function attackComputer({ row, col, turn }) {
-	console.log({ row, col });
-	if (turn != 1) {
-		console.log("wrong turn");
-		return;
-	}
-	if (computer.battleField.isValidAttack(row, col)) {
-		console.log("attacking");
-		const result = computer.battleField.receiveAttack(row, col);
-		if (computer.battleField.allShipSunk()) {
-			render.declareWinner(player);
-		}
-		render.updateComputerField(computer.battleField.board);
-		if (!result) {
-			render.showComputersTurn();
-			turn = 2;
-			setTimeout(() => attackPlayer(), 1000);
-		}
-	}
 }
