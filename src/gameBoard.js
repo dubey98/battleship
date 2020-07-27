@@ -22,7 +22,7 @@ export const GameBoard = () => {
 			console.error(
 				"The length of the ship is greter than to accomadate there"
 			);
-			return;
+			return false;
 		}
 		const shipIndex = shipData.length + 1;
 		for (let i = 0; i < ship.length && i + y < size; i++) {
@@ -33,19 +33,19 @@ export const GameBoard = () => {
 			y: y,
 			ship: ship,
 		});
-		return shipData;
+		return true;
 	};
 
 	const receiveAttack = (x, y) => {
 		if (board[x][y] == 100) {
 			board[x][y] = -100;
-			return board;
+			return false;
 		} else {
 			const ship = shipData[board[x][y] - 1].ship;
 			const startY = shipData[board[x][y] - 1].y;
 			ship.isHit(y - startY);
 			board[x][y] = -board[x][y];
-			return board;
+			return true;
 		}
 	};
 
@@ -60,6 +60,10 @@ export const GameBoard = () => {
 		return board[x][y] > 0 ? true : false;
 	};
 
+	const getBattleField = () => {
+		return board;
+	};
+
 	return {
 		board,
 		shipData,
@@ -67,5 +71,6 @@ export const GameBoard = () => {
 		receiveAttack,
 		allShipSunk,
 		isValidAttack,
+		getBattleField,
 	};
 };

@@ -1,81 +1,55 @@
-import { clickHandler } from "./clickHandler";
+import { attackComputer } from "./index";
 
 export const render = (() => {
-	const updateGameBoard = (board, num) => {
-		if (num == 1) {
-			const gameBoard = document.getElementById("game-board-one");
-			_clearElement(gameBoard);
-			_addTinyDivs(gameBoard, 1, board);
-		} else {
-			const gameBoard = document.getElementById("game-board-two");
-			_clearElement(gameBoard);
-			_addTinyDivs(gameBoard, 2, board);
-		}
-	};
-	const declareWinner = (player) => {
-		const message = document.getElementById("message");
-		message.textContent = player.name + " Wins!!";
-		alert(player.name + " wins");
-	};
-	function _addTinyDivs(element, num, board) {
-		const message = document.getElementById("message");
-		message.textContent = `Player ${num} Turn`;
+	const playerField = document.getElementById("player-game-board");
+	const computerField = document.getElementById("computer-game-board");
+	const message = document.getElementById("message");
+
+	const updatePlayerField = function (battleField) {
+		_removeChildren(playerField);
 		for (let i = 0; i < 10; i++) {
 			for (let j = 0; j < 10; j++) {
 				const div = document.createElement("div");
-
 				div.className = "square";
-
-				div.setAttribute("data-x", i);
-				div.setAttribute("data-y", j);
-				div.setAttribute("data-player", num);
-
-				if (board[i][j] < 0) {
-					div.textContent = "X";
-					div.style.padding = "2px";
-					div.style.color = "red";
-				} else if (board[i][j] > 0) {
-					div.style.padding = "2px";
-					div.style.backgroundColor = "lightblue";
-				}
-
-				div.addEventListener("click", (e) => {
-					clickHandler.handleClick({
-						row: e.target.dataset.x,
-						col: e.target.dataset.y,
-						player: e.target.dataset.player,
-						value: e.target.dataset.value,
-					});
-					_disableBattlefield(e.target.dataset.player);
-					_enableBattlefield(e.target.dataset.player == 1 ? 2 : 1);
-				});
-				element.appendChild(div);
+				div.textContent = battleField[i][j];
+				playerField.appendChild(div);
 			}
 		}
-	}
-	function _disableBattlefield(player) {
-		if (player == 1) {
-			const battlefield = document.getElementById("game-board-one");
-			battlefield.style.opacity = 0.5;
-		} else if (player == 2) {
-			const battlefield = document.getElementById("game-board-two");
-			battlefield.style.opacity = 0.5;
+	};
+	const updateComputerField = (battleField) => {
+		_removeChildren(computerField);
+		let turn = 1;
+		for (let row = 0; row < 10; row++) {
+			for (let col = 0; col < 10; col++) {
+				const div = document.createElement("div");
+				div.className = "square";
+				div.textContent = battleField[row][col];
+				div.addEventListener("click", () => attackComputer({ row, col, turn }));
+				computerField.appendChild(div);
+			}
 		}
-	}
-	function _enableBattlefield(player) {
-		if (player == 1) {
-			const battlefield = document.getElementById("game-board-one");
-			battlefield.style.opacity = 1;
-		} else if (player == 2) {
-			const battlefield = document.getElementById("game-board-two");
-			battlefield.style.opacity = 1;
-		}
-	}
-	function _clearElement(element) {
+	};
+	const showPlayersTurn = () => {
+		message.textContent = "Your Turn!!";
+		computerField.style.opacity = "1";
+		playerField.style.opacity = "0.5";
+	};
+	const showComputersTurn = () => {
+		message.textContent = "computers turn";
+		playerField.style.opacity = "1";
+		computerField.style.opacity = "0.5";
+	};
+	const declareWinner = (player) => {
+		message.textContent = `${player.name} Won the game.....!!`;
+	};
+	function _removeChildren(element) {
 		element.innerHTML = "";
 	}
 	return {
-		updateGameBoard,
+		updatePlayerField,
+		updateComputerField,
+		showPlayersTurn,
+		showComputersTurn,
 		declareWinner,
 	};
 })();
